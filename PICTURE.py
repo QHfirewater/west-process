@@ -374,7 +374,7 @@ def lidarpicture(radiation,mete,normal):
     #开始绘制雷达附加图
     i = 0
     while True:
-        a = input('是否绘制雷达附加图，否请按0，是请按1')
+        a = input('是否绘制雷达附加图，是请按1，否请按0')
         if a == '1':
             chaoradiation = radiation.copy()
             chaomete = mete.copy()
@@ -418,6 +418,8 @@ def lidarpicture(radiation,mete,normal):
             i = i + 1
             fig.savefig('处理后结果\\雷达附加图%s.png' % i)
             plt.close()
+        elif a == '0':
+            break
         else:
             print('\033[31m输入错误，请重新输开始')
             sys.exit()
@@ -520,6 +522,8 @@ def sixpm(six,normal):
             ax.set_xlim(pd.to_datetime(begin), pd.to_datetime(end))
             fig.savefig('处理后结果\\各站PM10图%s.png' % str(ci))
             plt.close()
+        elif a == '0':
+            break
         else:
             print('\033[31m输入错误，请重新开始')
             sys.exit()
@@ -618,53 +622,35 @@ def citynormal(citynormalpara):
     labels = labels.apply(_map, args=(get_label,))
     labels = dt.astype(str) + labels
     # -------------------------开始绘图--------------------------#
-    colors = ['#00E400', '#FEFF00', '#FE7E00', '#FC0201']
-    # emp = dt.max().max()
-    # a = 0
-    # if emp <= 50:
-    #     a = 100
-    #     colors2 = colors[:3]
-    # elif emp > 50 and emp <= 100:
-    #     a = 150
-    #     colors2 = colors[:3]
-    # elif emp > 100 and emp <= 150:
-    #     a = 200
-    #     colors2 = colors[:4]
-    # elif emp > 150 and emp <= 200:
-    #     a = 300
-    #     colors2 = colors[:5]
-    # elif emp > 200 and emp <= 300:
-    #     a = 500
-    #     colors2 = colors[:6]
-    # elif emp > 300:
-    #     a = 500
-    #     colors2 = colors
+    colors = ['#00E400', '#FEFF00', '#FE7E00', '#FC0201','#660066','#660000']
+    bounds = [0, 50, 100, 150, 200,300,500]
+
 
     cm = mpl.colors.ListedColormap(colors)
+    norm = mpl.colors.BoundaryNorm(bounds, cm.N)
 
 
     #绘制第一张日历图
     fig = plt.figure(figsize=(10, 8), dpi=120)
-    ax = sns.heatmap(dt.iloc[:, :10], annot=labels.iloc[:, :10], fmt='', vmin=0, vmax=200, cmap=cm,
-                     linewidths=0.5, linecolor='gray', cbar_kws={'pad': 0.03}, square=True)
+    ax = sns.heatmap(dt.iloc[:, :10], annot=labels.iloc[:, :10], fmt='', vmin=0, vmax=500, cmap=cm, norm=norm,
+                                  linewidths=0.5, linecolor='gray', cbar=False)
     plt.ylim(-0.5, len(dt))
-
     plt.savefig('处理后结果\各市日历图1.png')
     plt.close()
 
-    #绘制第二张日历图
+    # #绘制第二张日历图
     fig = plt.figure(figsize=(10, 8), dpi=120)
-    ax = sns.heatmap(dt.iloc[:, 10:20], annot=labels.iloc[:, 10:20], fmt='', vmin=0, vmax=200, cmap=cm,
-                     linewidths=0.5, linecolor='gray', cbar_kws={'pad': 0.03}, square=True)
+    ax = sns.heatmap(dt.iloc[:, 10:20], annot=labels.iloc[:, 10:20], fmt='', vmin=0, vmax=500, cmap=cm, norm=norm,
+                     linewidths=0.5, linecolor='gray', cbar=False)
     plt.ylim(-0.5, len(dt))
-
     plt.savefig('处理后结果\各市日历图2.png')
     plt.close()
 
-    #绘制第三张日历图
+
+    # #绘制第三张日历图
     fig = plt.figure(figsize=(10, 8), dpi=120)
-    ax = sns.heatmap(dt.iloc[:, 20:], annot=labels.iloc[:, 20:], fmt='', vmin=0, vmax=200, cmap=cm,
-                     linewidths=0.5, linecolor='gray', cbar_kws={'pad': 0.03}, square=True)
+    ax = sns.heatmap(dt.iloc[:, 20:], annot=labels.iloc[:, 20:], fmt='', vmin=0, vmax=500, cmap=cm, norm=norm,
+                     linewidths=0.5, linecolor='gray', cbar=False)
     plt.ylim(-0.5, len(dt))
     plt.savefig('处理后结果\各市日历图3.png')
     plt.close()
