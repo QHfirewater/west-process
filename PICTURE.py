@@ -34,6 +34,7 @@ def normalprocess(chaonormal):
 def noxprocess(chaonox):
     chaonox['时间'] = chaonox['时间'].apply(lambda x: x.replace(second = 0))
     chaonox['时间'] = chaonox['时间'].apply(lambda x: x.replace(minute = 0))
+
     chaonox= chaonox.set_index('时间')
     for i in np.arange(len(chaonox.columns)):
         chaonox.iloc[:,i] = pd.to_numeric(chaonox.iloc[:,i], errors='coerce')
@@ -50,7 +51,6 @@ def radiationprocess(chaoradiation):
     chaoradiation= chaoradiation.set_index('时间')
     for i in np.arange(len(chaoradiation.columns)):
         chaoradiation.iloc[:,i] = pd.to_numeric(chaoradiation.iloc[:,i], errors='coerce')
-
 
     chaoradiation.to_excel('处理后结果\\chaoradiation.xls')
     return chaoradiation
@@ -387,8 +387,13 @@ def lidarpicture(radiation,mete,normal):
             begin = input('请输入开始时间：如2020-01-11')
             end = input('请输入结束时间：如2020-01-17')
 
-            x = (chaonormal.iloc[:,0] >= pd.to_datetime(begin)) & (pd.to_datetime(end) >= chaonormal.iloc[:,0])
-            x1 = (chaoradiation.iloc[:, 0] >= pd.to_datetime(begin)) & (pd.to_datetime(end) >= chaoradiation.iloc[:, 0])
+            try:
+                x = (chaonormal.iloc[:,0] >= pd.to_datetime(begin)) & (pd.to_datetime(end) >= chaonormal.iloc[:,0])
+                x1 = (chaoradiation.iloc[:, 0] >= pd.to_datetime(begin)) & (pd.to_datetime(end) >= chaoradiation.iloc[:, 0])
+            except:
+                print('\033[31m输入时间格式错误，请重新输开始')
+                input('按<enter>键退出程序')
+                sys.exit()
 
             fig = plt.figure(figsize=(16,8),dpi=120)
             ax = fig.add_subplot(111)
@@ -414,7 +419,8 @@ def lidarpicture(radiation,mete,normal):
             fig.savefig('处理后结果\\雷达附加图%s.png' % i)
             plt.close()
         else:
-            break
+            print('\033[31m输入错误，请重新输开始')
+            sys.exit()
 
 
 #开始绘制pm2.5与排名pm10图
@@ -424,8 +430,8 @@ def pmpicture(normal):
     chaonormal.reset_index(inplace=True)
     fig = plt.figure(figsize=(16, 8), dpi=80)
     ax = fig.add_subplot(111)
-    leg1 = ax.plot(chaonormal.iloc[:, 0], chaonormal.iloc[:, 2], 'g', label='PM2.5')
-    leg2 = ax.plot(chaonormal.iloc[:, 0], chaonormal.iloc[:, 3], label='PM10')
+    ax.plot(chaonormal.iloc[:, 0], chaonormal.iloc[:, 2], 'g', label='PM2.5')
+    ax.plot(chaonormal.iloc[:, 0], chaonormal.iloc[:, 3], label='PM10')
     ax.set_ylabel('浓 度(μg/m3)')
     ax.set_xlabel('日 期 (天)')
     ax.set_xlim(chaonormal.iloc[0, 0], chaonormal.iloc[-1:, 0])
@@ -473,9 +479,14 @@ def sixpm(six,normal):
             ax = fig.add_subplot(111)
             grouped = sixstation.groupby('点位')
 
-            for i in (sixstation['点位'].unique()):
-                x = (grouped.get_group(i).iloc[:, 0] >= pd.to_datetime(begin)) & (pd.to_datetime(end) >= grouped.get_group(i).iloc[:, 0])
-                ax.plot(grouped.get_group(i).iloc[:,0][x],grouped.get_group(i).iloc[:,6][x],label = i)
+            try:
+                for i in (sixstation['点位'].unique()):
+                    x = (grouped.get_group(i).iloc[:, 0] >= pd.to_datetime(begin)) & (pd.to_datetime(end) >= grouped.get_group(i).iloc[:, 0])
+                    ax.plot(grouped.get_group(i).iloc[:,0][x],grouped.get_group(i).iloc[:,6][x],label = i)
+            except:
+                print('\033[31m输入时间格式错误，请重新开始')
+                input('按<enter>键退出程序')
+                sys.exit()
 
             x = (chaonormal.iloc[:, 0] >= pd.to_datetime(begin)) & (pd.to_datetime(end) >= chaonormal.iloc[:, 0])
             ax.plot(chaonormal.iloc[:, 0][x], chaonormal.iloc[:, 2][x], label='超站')
@@ -506,10 +517,12 @@ def sixpm(six,normal):
 
 
             ax.legend(loc = 'upper center',ncol=10)
+            ax.set_xlim(pd.to_datetime(begin), pd.to_datetime(end))
             fig.savefig('处理后结果\\各站PM10图%s.png' % str(ci))
             plt.close()
         else:
-            break
+            print('\033[31m输入错误，请重新开始')
+            sys.exit()
         ci += 1
 
 
@@ -517,7 +530,7 @@ def sixpm(six,normal):
 
 def cityaqi(citynormal):
     print('开始绘制8市AQI图')
-    city_normal = citynormal
+    city_normal = citynormal.copy()
     fig = plt.figure(figsize=(16, 8), dpi=80)
     ax = fig.add_subplot(111)
     res = pd.DataFrame()
@@ -530,18 +543,18 @@ def cityaqi(citynormal):
 
     emp = res.max().values
     a = 0
-    if emp < 50:
+    if emp <= 50:
         a = 50
-    elif emp >= 50 and emp < 100:
+    elif emp > 50 and emp <= 100:
         a = 100
-    elif emp >= 100 and emp < 150:
+    elif emp > 100 and emp <= 150:
         a = 150
-    elif emp >= 150 and emp < 200:
+    elif emp > 150 and emp <= 200:
         a = 200
-    elif emp >= 200 and emp < 300:
+    elif emp > 200 and emp <= 300:
         a = 300
     elif emp > 300:
-        a = emp + 100
+        a = 500
 
     ax.set_ylim(0, a)
 
@@ -583,39 +596,81 @@ def citymete(mete):
         plt.close()
 
 def citynormal(citynormalpara):
-    city_normal = citynormalpara.copy()
-    AQI = city_normal['AQI']
-    city = city_normal['城市名称']
-    first = city_normal['首要污染物']
-    cal = AQI.copy()
+    def get_label(s):
+        if s == '—':
+            return '\n' * 2
+        else:
+            reg = re.compile(r'.*?\((.*?)\).*?')
+            res = '\n' + '\n'.join(reg.findall(s))
+            return res + '\n' * (2 - res.count('\n'))
 
-    first.columns = city.iloc[2, :]
-    cal.columns = city.iloc[2, :]
+    def _map(series, func):
+        return series.apply(func)
 
-    cal.insert(loc=0, column='日 期', value=city_normal.iloc[:, 1])
-    day = cal.iloc[:, 0].apply(lambda s: str(s).split()[0])
-    cal.iloc[:, 0] = day.apply(lambda s: s.split('-')[-1])
-    first.insert(loc=0, column='日 期', value=cal.iloc[:, 0])
+    data = citynormalpara.copy()
+    l = len(data.columns)
+    citys = ['南平', '厦门', '宁德', '泉州', '漳州', '福州', '莆田', '龙岩']
+    data.iloc[:, 1] = pd.to_datetime(data.iloc[:, 1])
+    col = data.iloc[:, 1].dt.day.apply(lambda s: f'{s}日')
+    dt = pd.DataFrame(data.iloc[:, 2:l:5].values.T, index=citys, columns=col)
+    # -------------------------处理需要的自定义标签--------------------------#
+    labels = pd.DataFrame(data.iloc[:, 3:l:5].values.T, columns=dt.columns, index=dt.index)
+    labels = labels.apply(_map, args=(get_label,))
+    labels = dt.astype(str) + labels
+    # -------------------------开始绘图--------------------------#
+    colors = ['#00E400', '#FEFF00', '#FE7E00', '#FC0201']
+    # emp = dt.max().max()
+    # a = 0
+    # if emp <= 50:
+    #     a = 100
+    #     colors2 = colors[:3]
+    # elif emp > 50 and emp <= 100:
+    #     a = 150
+    #     colors2 = colors[:3]
+    # elif emp > 100 and emp <= 150:
+    #     a = 200
+    #     colors2 = colors[:4]
+    # elif emp > 150 and emp <= 200:
+    #     a = 300
+    #     colors2 = colors[:5]
+    # elif emp > 200 and emp <= 300:
+    #     a = 500
+    #     colors2 = colors[:6]
+    # elif emp > 300:
+    #     a = 500
+    #     colors2 = colors
 
-    cal.set_index('日 期', inplace=True)
-    first.set_index('日 期', inplace=True)
-    cal.columns.name = None
-
-    cal = cal.T
-    first = first.T
-
-    cm_light = mpl.colors.ListedColormap(['tab:green', 'yellow', 'orange', 'red'])
-    plt.figure(figsize=(22, 6))
+    cm = mpl.colors.ListedColormap(colors)
 
 
-    ax = sns.heatmap(cal, square=True, annot=True, vmin=0, vmax=200, fmt='.0f', linewidths=.05
-                     , linecolor='gray', mask=cal < 1, cmap=cm_light)
+    #绘制第一张日历图
+    fig = plt.figure(figsize=(10, 8), dpi=120)
+    ax = sns.heatmap(dt.iloc[:, :10], annot=labels.iloc[:, :10], fmt='', vmin=0, vmax=200, cmap=cm,
+                     linewidths=0.5, linecolor='gray', cbar_kws={'pad': 0.03}, square=True)
+    plt.ylim(-0.5, len(dt))
 
-
-    plt.ylim(0, len(cal) + .5)
-    plt.xlim(0, len(cal.columns) + .5)
-    plt.savefig('处理后结果\各市日历图.png')
+    plt.savefig('处理后结果\各市日历图1.png')
     plt.close()
+
+    #绘制第二张日历图
+    fig = plt.figure(figsize=(10, 8), dpi=120)
+    ax = sns.heatmap(dt.iloc[:, 10:20], annot=labels.iloc[:, 10:20], fmt='', vmin=0, vmax=200, cmap=cm,
+                     linewidths=0.5, linecolor='gray', cbar_kws={'pad': 0.03}, square=True)
+    plt.ylim(-0.5, len(dt))
+
+    plt.savefig('处理后结果\各市日历图2.png')
+    plt.close()
+
+    #绘制第三张日历图
+    fig = plt.figure(figsize=(10, 8), dpi=120)
+    ax = sns.heatmap(dt.iloc[:, 20:], annot=labels.iloc[:, 20:], fmt='', vmin=0, vmax=200, cmap=cm,
+                     linewidths=0.5, linecolor='gray', cbar_kws={'pad': 0.03}, square=True)
+    plt.ylim(-0.5, len(dt))
+    plt.savefig('处理后结果\各市日历图3.png')
+    plt.close()
+
+
+
 
 
 
@@ -631,6 +686,8 @@ if __name__ == '__main__':
     register_matplotlib_converters()
     import seaborn as sns
     import os
+    import re
+    import sys
     plt.switch_backend('agg')
 
     print('开始进行系统配置')
