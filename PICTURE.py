@@ -391,9 +391,9 @@ def lidarpicture(radiation,mete,normal):
                 x = (chaonormal.iloc[:,0] >= pd.to_datetime(begin)) & (pd.to_datetime(end) >= chaonormal.iloc[:,0])
                 x1 = (chaoradiation.iloc[:, 0] >= pd.to_datetime(begin)) & (pd.to_datetime(end) >= chaoradiation.iloc[:, 0])
             except:
-                print('\033[31m输入时间格式错误，请重新输开始')
-                input('按<enter>键退出程序')
-                sys.exit()
+                print('\033[31m输入时间格式错误，需要绘制此图请重新开始 \033[0m')
+                input('按<enter>键继续绘制其他图形')
+                break
 
             fig = plt.figure(figsize=(16,8),dpi=120)
             ax = fig.add_subplot(111)
@@ -421,8 +421,8 @@ def lidarpicture(radiation,mete,normal):
         elif a == '0':
             break
         else:
-            print('\033[31m输入错误，请重新输开始')
-            sys.exit()
+            print('\033[31m输入数字错误，请重新输入 \033[0m')
+
 
 
 #开始绘制pm2.5与排名pm10图
@@ -486,9 +486,9 @@ def sixpm(six,normal):
                     x = (grouped.get_group(i).iloc[:, 0] >= pd.to_datetime(begin)) & (pd.to_datetime(end) >= grouped.get_group(i).iloc[:, 0])
                     ax.plot(grouped.get_group(i).iloc[:,0][x],grouped.get_group(i).iloc[:,6][x],label = i)
             except:
-                print('\033[31m输入时间格式错误，请重新开始')
-                input('按<enter>键退出程序')
-                sys.exit()
+                print('\033[31m输入时间格式错误，绘制此图请重新开始 \033[0m')
+                input('按<enter>键绘制其他图形')
+                break
 
             x = (chaonormal.iloc[:, 0] >= pd.to_datetime(begin)) & (pd.to_datetime(end) >= chaonormal.iloc[:, 0])
             ax.plot(chaonormal.iloc[:, 0][x], chaonormal.iloc[:, 2][x], label='超站')
@@ -525,8 +525,9 @@ def sixpm(six,normal):
         elif a == '0':
             break
         else:
-            print('\033[31m输入错误，请重新开始')
-            sys.exit()
+            print('\033[31m输入数字错误 \033[0m')
+            input('按<enter>键重新开始')
+
         ci += 1
 
 
