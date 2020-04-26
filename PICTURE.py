@@ -693,123 +693,133 @@ if __name__ == '__main__':
 
 
     #开始导入相关数据：
-    print('开始导入超站相关数据')
-    try:
-        chaonormal = pd.read_excel(r'超站常规数据小时值.xls',skiprows=1,parse_dates=['时间'])
-    except:
-        print('超站常规数据文件名错误')
-    try:
-        chaomete = pd.read_excel(r'超站气象五参小时值.xls',skiprows=1,parse_dates=['时间'])
-    except:
-        print('超站气象五参文件名错误')
-    try:
-        chaonox = pd.read_excel(r'超站氮氧化物.xls',skiprows=1,parse_dates=['时间'])
-    except:
-        print('超站氮氧化物文件名错误')
-    try:
-        chaoradiation = pd.read_excel(r'超站辐射数据.xls',skiprows=1,parse_dates=['时间'])
-    except:
-        print('超站辐射文件名错误')
-    try:
-        chaovocs = pd.read_excel(r'超站VOCS.xls',skiprows=1,parse_dates=['时间'])
-    except:
-        print('超站VOCs文件名错误')
-    try:
-        sixstation = pd.read_excel(r'其他常规六参监测_小时数据.xlsx',parse_dates=['时间'])
-    except:
-        print('六站文件名错误')
+    while True:
+        name = str(input('请输入账号：'))
+        password = str(input('请输入密码：'))
+        if name == '13255100539' and  password == '5201314':
+            print('开始导入超站相关数据')
+            try:
+                chaonormal = pd.read_excel(r'超站常规数据小时值.xls',skiprows=1,parse_dates=['时间'])
+            except:
+                print('\033[31m  超站常规数据文件名错误 \033[0m')
+            try:
+                chaomete = pd.read_excel(r'超站气象五参小时值.xls',skiprows=1,parse_dates=['时间'])
+            except:
+                print('\033[31m  超站气象五参文件名错误 \033[0m')
+            try:
+                chaonox = pd.read_excel(r'超站氮氧化物.xls',skiprows=1,parse_dates=['时间'])
+            except:
+                print('\033[31m  超站氮氧化物文件名错误 \033[0m')
+            try:
+                chaoradiation = pd.read_excel(r'超站辐射数据.xls',skiprows=1,parse_dates=['时间'])
+            except:
+                print('\033[31m  超站辐射文件名错误 \033[0m')
+            try:
+                chaovocs = pd.read_excel(r'超站VOCS.xls',skiprows=1,parse_dates=['时间'])
+            except:
+                print('\033[31m  超站VOCs文件名错误 \033[0m')
+            try:
+                sixstation = pd.read_excel(r'其他常规六参监测_小时数据.xlsx',parse_dates=['时间'])
+            except:
+                print('\033[31m  六站文件名错误 \033[0m')
 
 
 
 
 
-    #开始收集处理后的数据：
-    print('开始处理数据')
-    try:
-        chaomete2 = meteprocess(chaomete)
-    except:
-        print('超站气象数据格式错误')
-    try:
-        chaonormal2 = normalprocess(chaonormal)
-    except:
-        print('超站常规数据格式错误')
-    try:
-        chaonox2 = noxprocess(chaonox)
-    except:
-        print('超站氮氧化物数据格式错误')
-    try:
-        chaoradiation2 = radiationprocess(chaoradiation)
-    except:
-        print('超站辐射数据错误')
-    try:
-        chaovocs2 = vocsprocess(chaovocs)
-    except:
-        print('超站VOCs数据格式错误')
-    try:
-        sixstation2 = sixprocess(sixstation)
-    except:
-        print('六站数据格式错误')
-    try:
-        city_normal,city_mete = cityprocess()
-    except:
-        print('其他各市数据格式错误')
+
+            #开始收集处理后的数据：
+            print('开始处理数据')
+            try:
+                chaomete2 = meteprocess(chaomete)
+            except:
+                print('\033[31m  超站气象数据格式错误 \033[0m')
+            try:
+                chaonormal2 = normalprocess(chaonormal)
+            except:
+                print('\033[31m  超站常规数据格式错误 \033[0m')
+            try:
+                chaonox2 = noxprocess(chaonox)
+            except:
+                print('\033[31m  超站氮氧化物数据格式错误 \033[0m')
+            try:
+                chaoradiation2 = radiationprocess(chaoradiation)
+            except:
+                print('\033[31m  超站辐射数据错误 \033[0m')
+            try:
+                chaovocs2 = vocsprocess(chaovocs)
+            except:
+                print('\033[31m  超站VOCs数据格式错误 \033[0m')
+            try:
+                sixstation2 = sixprocess(sixstation)
+            except:
+                print('\033[31m  六站数据格式错误 \033[0m')
+            try:
+                city_normal,city_mete = cityprocess()
+            except:
+                print('\033[31m  其他各市数据格式错误 \033[0m')
 
 
 
-    #开始绘制各种图片
-    print('开始绘制图形')
-    try:
-        normalpicture(chaonormal2)
-    except:
-        print('缺少超站常规数据')
-    try:
-        metepicture(chaomete2)
-    except:
-        print('缺少超站气象数据')
-    try:
-        radiationpicture(chaoradiation2)
-    except:
-        print('缺少超站辐射数据')
-    try:
-        o3picture(sixstation2, chaonormal2)
-    except:
-        print('缺少六站数据或者超站常规数据')
-    try:
-        noxpicuture(chaonox2, chaovocs2)
-    except:
-        print('缺少超站氮氧化物或者VOCs数据')
-    try:
-        o3radiatonpicture(chaonormal2, chaoradiation2)
-    except:
-        print('缺少超站常规或者辐射数据')
-    try:
-        o3metepicture(chaonormal2, chaomete2)
-    except:
-        print('缺少超站常规或者气象数据')
-    try:
-        pmpicture(chaonormal2)
-    except:
-        print('缺少超站常规数据')
-    try:
-        sixpm(sixstation2,chaonormal2)
-    except:
-        print('缺少六站数据或超站常规数据')
-    try:
-        cityaqi(city_normal)
-    except:
-        print('缺少各市常规数据')
-    try:
-        citymete(city_mete)
-    except:
-        print('缺少各市气象数据')
-    try:
-        citynormal(city_normal)
-    except:
-        print('缺少各市常规数据')
-    try:
-        lidarpicture(chaoradiation2, chaomete2, chaonormal2)
-    except:
-        print('缺少超站常规或者气象或者雷达数据')
+            #开始绘制各种图片
+            print('开始绘制图形')
+            try:
+                normalpicture(chaonormal2)
+            except:
+                print('\033[31m  缺少超站常规数据 \033[0m')
+            try:
+                metepicture(chaomete2)
+            except:
+                print('\033[31m  缺少超站气象数据 \033[0m')
+            try:
+                radiationpicture(chaoradiation2)
+            except:
+                print('\033[31m  缺少超站辐射数据 \033[0m')
+            try:
+                o3picture(sixstation2, chaonormal2)
+            except:
+                print('\033[31m  缺少六站数据或者超站常规数据 \033[0m')
+            try:
+                noxpicuture(chaonox2, chaovocs2)
+            except:
+                print('\033[31m  缺少超站氮氧化物或者VOCs数据 \033[0m')
+            try:
+                o3radiatonpicture(chaonormal2, chaoradiation2)
+            except:
+                print('\033[31m  缺少超站常规或者辐射数据 \033[0m')
+            try:
+                o3metepicture(chaonormal2, chaomete2)
+            except:
+                print('\033[31m  缺少超站常规或者气象数据 \033[0m')
+            try:
+                pmpicture(chaonormal2)
+            except:
+                print('\033[31m  缺少超站常规数据 \033[0m')
+            try:
+                sixpm(sixstation2,chaonormal2)
+            except:
+                print('\033[31m  缺少六站数据或超站常规数据 \033[0m')
+            try:
+                cityaqi(city_normal)
+            except:
+                print('\033[31m  缺少各市常规数据 \033[0m')
+            try:
+                citymete(city_mete)
+            except:
+                print('\033[31m  缺少各市气象数据据 \033[0m')
+            try:
+                citynormal(city_normal)
+            except:
+                print('\033[31m  缺少各市常规数据 \033[0m')
+            try:
+                lidarpicture(chaoradiation2, chaomete2, chaonormal2)
+            except:
+                print('\033[31m  缺少超站常规或者气象或者辐射数据 \033[0m')
+            break
+        else:
+            print('\033[31m  输入错误请重新输入 \033[0m')
+
+
 
 
 
